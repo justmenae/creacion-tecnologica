@@ -4,25 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Diseña tu organización</title>
-  <meta name="description" content="Herramienta interactiva para armar el organigrama de una empresa.">
+  <meta name="description" content="Editor de organigramas que diagnostica amplitud de control, unidad de mando y coherencia con la estrategia, el tamaño, la tecnología y el entorno.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-  <!-- 1. PORTADA: se desvanece al deslizar.
-       Imagen de fondo: guarda tu foto como img/portada.jpg (se configura en styles.css) -->
   <section class="portada" id="portada">
     <div>
+      <p class="kicker">Estructura y diseño organizacional</p>
       <h1>Diseña la estructura de tu organización</h1>
-      <p>Arma un organigrama libre: agrega cuadros, muévelos y conéctalos.</p>
+      <p>Arma un organigrama, mide su amplitud de control y descubre si encaja con tu estrategia, tamaño, tecnología y entorno.</p>
       <p class="desliza">Desliza para empezar</p>
     </div>
   </section>
 
-  <!-- 2. INVITACIÓN -->
   <section class="invitacion">
     <button class="invitacion-tarjeta" id="empezar" type="button">
       <strong>Empieza a diseñar tu organización</strong>
@@ -30,45 +27,117 @@
     </button>
   </section>
 
-  <!-- 3. EDITOR: lienzo blanco + barra de opciones a la derecha -->
   <section class="editor" id="editor" hidden aria-label="Editor de organigrama">
     <div class="editor-caja">
-
       <div class="lienzo-caja">
         <div class="lienzo" id="lienzo">
           <div class="escenario" id="escenario">
             <svg id="lineas" aria-hidden="true"></svg>
           </div>
         </div>
-        <p class="pista" id="pista">Tu lienzo está vacío.<br>Agrega tu primer cuadro desde las herramientas.</p>
+        <p class="pista" id="pista">Tu lienzo está vacío.<br>Agrega un cuadro o carga una plantilla.</p>
       </div>
 
       <aside class="barra">
         <h2>Herramientas</h2>
-
         <h3>Agregar</h3>
-        <button class="herr" type="button" data-add="direccion">Dirección<small>Quien lidera toda la organización.</small></button>
-        <button class="herr" type="button" data-add="area">Área<small>Un departamento, como Finanzas o Ventas.</small></button>
+        <button class="herr" type="button" data-add="direccion">Dirección<small>Quien lidera la organización.</small></button>
+        <button class="herr" type="button" data-add="area">Área<small>Departamento, división o equipo.</small></button>
         <button class="herr" type="button" data-add="cargo">Cargo<small>Un puesto dentro de un área.</small></button>
 
         <h3>Relacionar</h3>
-        <button class="herr" type="button" id="btnConectar" aria-pressed="false">Conectar<small>Elige el cuadro superior y luego el que depende de él.</small></button>
+        <button class="herr" type="button" id="btnConectar" aria-pressed="false">Conectar<small>Cuadro superior y luego el que depende de él.</small></button>
+        <button class="herr" type="button" id="btnStaff">Alternar autoridad staff<small>Línea (continua) o staff/asesoría (punteada).</small></button>
 
         <h3>Editar</h3>
-        <button class="herr" type="button" id="btnEliminar">Eliminar seleccionado<small>Haz clic en un cuadro y luego aquí.</small></button>
+        <button class="herr" type="button" id="btnDeshacer">Deshacer<small>Ctrl+Z</small></button>
+        <button class="herr" type="button" id="btnRehacer">Rehacer<small>Ctrl+Y</small></button>
+        <button class="herr" type="button" id="btnEliminar">Eliminar seleccionado<small>Clic en un cuadro y luego aquí.</small></button>
+
+        <h3>Buscar y filtrar</h3>
+        <input class="campo" type="search" id="buscar" placeholder="Buscar por texto" aria-label="Buscar cuadros">
+        <select class="campo" id="filtroTipo" aria-label="Filtrar por tipo">
+          <option value="">Todos los tipos</option>
+          <option value="direccion">Dirección</option>
+          <option value="area">Áreas</option>
+          <option value="cargo">Cargos</option>
+          <option value="staff">Staff</option>
+        </select>
 
         <details>
-          <summary>Más opciones</summary>
-          <button class="herr" type="button" id="btnEjemplo">Cargar ejemplo<small>Un organigrama listo para modificar.</small></button>
+          <summary>Plantillas y archivo</summary>
+          <select class="campo" id="selPlantilla" aria-label="Plantilla">
+            <option value="funcional">Funcional</option>
+            <option value="productos">Por productos</option>
+            <option value="geografica">Geográfica</option>
+            <option value="matricial">Matricial</option>
+          </select>
+          <button class="herr" type="button" id="btnPlantilla">Cargar plantilla<small>Reemplaza el lienzo.</small></button>
+          <button class="herr" type="button" id="btnExportar">Exportar JSON<small>Descarga tu diseño.</small></button>
+          <button class="herr" type="button" id="btnImportar">Importar JSON<small>Abre un diseño guardado.</small></button>
+          <input type="file" id="archivo" accept="application/json,.json" hidden>
           <button class="herr" type="button" id="btnLimpiar">Limpiar todo<small>Borra el lienzo completo.</small></button>
         </details>
 
         <p class="mensaje" id="mensaje" aria-live="polite">Arrastra un cuadro para moverlo. Doble clic para cambiar su texto.</p>
       </aside>
+    </div>
 
+    <div class="diag" id="diag">
+      <article class="card">
+        <h2>Métricas y alertas</h2>
+        <div class="kpis" id="metricas"></div>
+        <ul class="lista" id="alertas"></ul>
+      </article>
+
+      <article class="card">
+        <h2>Contexto y diseño</h2>
+        <label class="rotulo" for="cfgFormal">Formalización: <b id="vFormal"></b>%</label>
+        <input type="range" id="cfgFormal" min="0" max="100" step="5">
+        <label class="rotulo" for="cfgCentral">Centralización: <b id="vCentral"></b>%</label>
+        <input type="range" id="cfgCentral" min="0" max="100" step="5">
+        <label class="rotulo chk"><input type="checkbox" id="cfgMatricial"> Doble reporte intencional (matricial)</label>
+        <label class="rotulo" for="cfgDepto">Departamentalización</label>
+        <select class="campo" id="cfgDepto"></select>
+        <p class="nota" id="deptoInfo"></p>
+        <label class="rotulo" for="cfgEstrategia">Estrategia</label>
+        <select class="campo" id="cfgEstrategia">
+          <option value="costos">Liderazgo en costos</option>
+          <option value="diferenciacion">Diferenciación</option>
+          <option value="innovacion">Innovación</option>
+        </select>
+        <label class="rotulo" for="cfgTamano">Tamaño</label>
+        <select class="campo" id="cfgTamano">
+          <option value="pequena">Pequeña</option>
+          <option value="mediana">Mediana</option>
+          <option value="grande">Grande</option>
+        </select>
+        <label class="rotulo" for="cfgTecno">Tecnología</label>
+        <select class="campo" id="cfgTecno">
+          <option value="rutinaria">Rutinaria</option>
+          <option value="mixta">Mixta</option>
+          <option value="noRutinaria">No rutinaria</option>
+        </select>
+        <label class="rotulo" for="cfgEntorno">Incertidumbre del entorno</label>
+        <select class="campo" id="cfgEntorno">
+          <option value="estable">Estable</option>
+          <option value="cambiante">Cambiante</option>
+          <option value="incierto">Muy incierto</option>
+        </select>
+      </article>
+
+      <article class="card">
+        <h2>Coherencia estructura–contexto</h2>
+        <div class="medidor" id="medidor" aria-hidden="true">
+          <span class="marca" id="mActual"></span><span class="marca ideal" id="mIdeal"></span>
+        </div>
+        <div class="escala"><span>Orgánica</span><span>Mecanicista</span></div>
+        <p class="nota" id="resumen"></p>
+        <ul class="lista" id="recomendaciones"></ul>
+      </article>
     </div>
   </section>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
