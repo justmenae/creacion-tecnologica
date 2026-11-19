@@ -11,29 +11,49 @@
     <!-- CABECERA -->
     <header class="header">
       <div>
+        <span class="badge-contest">Concurso Creación Tecnológica • Arquitectura &amp; SI</span>
         <h1>🏢 SysCorp Tycoon</h1>
         <p class="subtitle">Simulador de Diseño de Organización Empresarial y Sistemas de Información</p>
       </div>
-      <div class="turn-badge">Turno: <span id="turn-display">1</span> / 5</div>
+      <div class="turn-badge">Turno: <span id="turn-display">1</span> / <span id="max-turns-display">5</span></div>
     </header>
 
     <!-- INDICADORES DE SALUD ORGANIZACIONAL -->
-    <section class="metrics-grid">
+    <section class="metrics-grid" aria-label="Indicadores organizacionales">
       <div class="metric-card">
         <span class="metric-label">💰 Presupuesto</span>
         <strong class="metric-value" id="budget-val">$10,000</strong>
+        <small class="metric-hint" id="budget-status">Liquidez operativa disponible</small>
       </div>
+
       <div class="metric-card">
-        <span class="metric-label">🔗 Cohesión de Áreas</span>
-        <strong class="metric-value" id="cohesion-val">40%</strong>
+        <div class="metric-top">
+          <span class="metric-label">🔗 Cohesión de Áreas</span>
+          <strong class="metric-value" id="cohesion-val">40%</strong>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill fill-cohesion" id="cohesion-bar" style="width: 40%;"></div>
+        </div>
       </div>
+
       <div class="metric-card">
-        <span class="metric-label">⚡ Flujo de Información</span>
-        <strong class="metric-value" id="infoflow-val">35%</strong>
+        <div class="metric-top">
+          <span class="metric-label">⚡ Flujo de Información</span>
+          <strong class="metric-value" id="infoflow-val">35%</strong>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill fill-info" id="infoflow-bar" style="width: 35%;"></div>
+        </div>
       </div>
+
       <div class="metric-card">
-        <span class="metric-label">🛡️ Capacidad de Respuesta</span>
-        <strong class="metric-value" id="response-val">45%</strong>
+        <div class="metric-top">
+          <span class="metric-label">🛡️ Capacidad de Respuesta</span>
+          <strong class="metric-value" id="response-val">45%</strong>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill fill-response" id="response-bar" style="width: 45%;"></div>
+        </div>
       </div>
     </section>
 
@@ -41,34 +61,61 @@
     <main id="game-board" class="main-grid">
       <!-- PANEL IZQUIERDO: DISEÑO DE ESTRUCTURA Y SISTEMAS -->
       <section class="panel">
-        <h2>1. Arquitectura y Sistemas de Información</h2>
-        <p class="panel-desc">Activa sistemas o rediseña la conexión entre departamentos:</p>
-        
+        <div class="panel-header">
+          <h2>1. Arquitectura y Sistemas de Información</h2>
+          <span class="panel-tag" id="systems-count">0 / 3 activos</span>
+        </div>
+        <p class="panel-desc">Activa sistemas o rediseña la conexión entre departamentos antes o durante cada decisión:</p>
+
         <div class="departments">
-          <div class="dept-box" id="dept-ventas">🛒 <strong>Comercial / Ventas</strong><br><small>Estado: Operación manual</small></div>
-          <div class="dept-box" id="dept-ops">📦 <strong>Operaciones / Almacén</strong><br><small>Estado: Aislado</small></div>
-          <div class="dept-box" id="dept-finanzas">📊 <strong>Finanzas y Control</strong><br><small>Estado: Reportes tardíos</small></div>
+          <div class="dept-box" id="dept-ventas">
+            🛒 <strong>Comercial / Ventas</strong><br />
+            <small>Estado: Operación manual</small>
+          </div>
+          <div class="dept-box" id="dept-ops">
+            📦 <strong>Operaciones / Almacén</strong><br />
+            <small>Estado: Aislado</small>
+          </div>
+          <div class="dept-box" id="dept-finanzas">
+            📊 <strong>Finanzas y Control</strong><br />
+            <small>Estado: Reportes tardíos</small>
+          </div>
         </div>
 
         <div class="upgrades-list">
           <button class="upgrade-btn" id="btn-erp" onclick="buySystem('erp')">
-            <strong>Implementar ERP Integrado ($3,500)</strong>
-            <span>Conecta Ventas, Almacén y Finanzas en tiempo real (+25% Flujo Info, +20% Cohesión)</span>
+            <div class="btn-top">
+              <strong>Implementar ERP Integrado</strong>
+              <span class="cost-pill">$3,500</span>
+            </div>
+            <span class="btn-desc">Conecta Ventas, Almacén y Finanzas en tiempo real (+25% Flujo Info, +20% Cohesión)</span>
           </button>
+
           <button class="upgrade-btn" id="btn-crm" onclick="buySystem('crm')">
-            <strong>Desplegar CRM Centralizado ($2,500)</strong>
-            <span>Ordena la relación con clientes y acelera pedidos (+20% Respuesta, +15% Flujo Info)</span>
+            <div class="btn-top">
+              <strong>Desplegar CRM Centralizado</strong>
+              <span class="cost-pill">$2,500</span>
+            </div>
+            <span class="btn-desc">Ordena la relación con clientes y acelera pedidos (+20% Respuesta, +15% Flujo Info)</span>
           </button>
+
           <button class="upgrade-btn" id="btn-org" onclick="buySystem('org')">
-            <strong>Rediseño Matricial Ágil ($2,000)</strong>
-            <span>Elimina silos jerárquicos entre departamentos (+25% Cohesión, +15% Respuesta)</span>
+            <div class="btn-top">
+              <strong>Rediseño Matricial Ágil</strong>
+              <span class="cost-pill">$2,000</span>
+            </div>
+            <span class="btn-desc">Elimina silos jerárquicos entre departamentos (+25% Cohesión, +15% Respuesta)</span>
           </button>
         </div>
       </section>
 
       <!-- PANEL DERECHO: RETO ORGANIZACIONAL DEL TURNO -->
       <section class="panel">
-        <h2>2. Escenario Organizacional Actual</h2>
+        <div class="panel-header">
+          <h2>2. Escenario Organizacional Actual</h2>
+          <span class="panel-tag" id="scenario-phase">Diagnóstico Operativo</span>
+        </div>
+
         <div class="scenario-box">
           <h3 id="scenario-title">Cargando escenario...</h3>
           <p id="scenario-desc"></p>
@@ -87,8 +134,9 @@
 
     <!-- PANTALLA FINAL (OCULTA AL INICIO) -->
     <section id="end-screen" class="end-screen hidden">
+      <span class="badge-contest">Auditoría Ejecutiva Completada</span>
       <h2>🏆 Diagnóstico Final de tu Organización</h2>
-      <p id="final-summary"></p>
+      <p class="end-summary" id="final-summary"></p>
       <div class="final-stats" id="final-stats"></div>
       <button class="restart-btn" onclick="resetGame()">🔄 Simular Nuevo Diseño</button>
     </section>
