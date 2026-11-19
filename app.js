@@ -102,31 +102,83 @@ function addLog(msg) {
   ul.prepend(li);
 }
 
+function updateDepartmentsUI() {
+  const deptVentas = document.getElementById("dept-ventas");
+  const deptOps = document.getElementById("dept-ops");
+  const deptFinanzas = document.getElementById("dept-finanzas");
+
+  deptVentas.classList.remove("connected");
+  deptOps.classList.remove("connected");
+  deptFinanzas.classList.remove("connected");
+
+  deptVentas.innerHTML = "🛒 <strong>Comercial / Ventas</strong><br><small>Estado: Operación manual</small>";
+  deptOps.innerHTML = "📦 <strong>Operaciones / Almacén</strong><br><small>Estado: Aislado</small>";
+  deptFinanzas.innerHTML = "📊 <strong>Finanzas y Control</strong><br><small>Estado: Reportes tardíos</small>";
+
+  if (state.systems.erp) {
+    deptOps.classList.add("connected");
+    deptOps.innerHTML = "📦 <strong>Operaciones / Almacén</strong><br><small>Conectado vía ERP</small>";
+    deptFinanzas.classList.add("connected");
+    deptFinanzas.innerHTML = "📊 <strong>Finanzas y Control</strong><br><small>Datos en tiempo real</small>";
+  }
+
+  if (state.systems.crm) {
+    deptVentas.classList.add("connected");
+    deptVentas.innerHTML = "🛒 <strong>Comercial / Ventas</strong><br><small>CRM Activo</small>";
+  }
+
+  if (state.systems.org) {
+    deptVentas.classList.add("connected");
+    deptOps.classList.add("connected");
+    deptFinanzas.classList.add("connected");
+  }
+}
+
+function updateSystemsButtonsUI() {
+  const btnErp = document.getElementById("btn-erp");
+  const btnCrm = document.getElementById("btn-crm");
+  const btnOrg = document.getElementById("btn-org");
+
+  btnErp.disabled = state.systems.erp || state.budget < 3500;
+  btnCrm.disabled = state.systems.crm || state.budget < 2500;
+  btnOrg.disabled = state.systems.org || state.budget < 2000;
+
+  btnErp.classList.toggle("active-system", state.systems.erp);
+  btnCrm.classList.toggle("active-system", state.systems.crm);
+  btnOrg.classList.toggle("active-system", state.systems.org);
+
+  btnErp.querySelector(".cost-pill").textContent = state.systems.erp ? "Activo ✓" : "$3,500";
+  btnCrm.querySelector(".cost-pill").textContent = state.systems.crm ? "Activo ✓" : "$2,500";
+  btnOrg.querySelector(".cost-pill").textContent = state.systems.org ? "Activo ✓" : "$2,000";
+
+  const activeCount = Object.values(state.systems).filter(Boolean).length;
+  document.getElementById("systems-count").textContent = `${activeCount} / 3 activos`;
+}
+
 function updateUI() {
-  document.getElementById("turn-display").textContent = state.turn;
+  document.getElementById("turn-display").textContent = Math.min(state.turn, state.maxTurns);
+  document.getElementById("max-turns-display").textContent = state.maxTurns;
   document.getElementById("budget-val").textContent = `$${state.budget.toLocaleString()}`;
   document.getElementById("cohesion-val").textContent = `${state.cohesion}%`;
   document.getElementById("infoflow-val").textContent = `${state.infoflow}%`;
   document.getElementById("response-val").textContent = `${state.response}%`;
 
-  // Actualizar estado visual de departamentos
-  if (state.systems.erp) {
-    document.getElementById("dept-ops").classList.add("connected");
-    document.getElementById("dept-ops").innerHTML = "📦 <strong>Operaciones / Almacén</strong><br><small>Conectado vía ERP</small>";
-    document.getElementById("dept-finanzas").classList.add("connected");
-    document.getElementById("dept-finanzas").innerHTML = "📊 <strong>Finanzas y Control</strong><br><small>Datos en tiempo real</small>";
-  }
-  if (state.systems.crm) {
-    document.getElementById("dept-ventas").classList.add("connected");
-    document.getElementById("dept-ventas").innerHTML = "🛒 <strong>Comercial / Ventas</strong><br><small>CRM Activo</small>";
+  document.getElementById("cohesion-bar").style.width = `${state.cohesion}%`;
+  document.getElementById("infoflow-bar").style.width = `${state.infoflow}%`;
+  document.getElementById("response-bar").style.width = `${state.response}%`;
+
+  const budgetHint = document.getElementById("budget-status");
+  if (state.budget < 1500) {
+    budgetHint.textContent = "Caja ajustada: prioriza decisiones de alto impacto";
+    budgetHint.classList.add("low-budget");
+  } else {
+    budgetHint.textContent = "Liquidez operativa disponible";
+    budgetHint.classList.remove("low-budget");
   }
 
-  // Botones de sistemas
-  document.getElementById("btn-erp").disabled = state.systems.erp || state.budget < 3500;
-  document.getElementById("btn-crm").disabled = state.systems.crm || state.budget < 2500;
-  document.getElementById("btn-org").disabled = state.systems.org || state.budget < 2000;
+  updateDepartmentsUI();
+  updateSystemsButtonsUI();
 
-  // Cargar escenario actual
   if (state.turn <= state.maxTurns) {
     const current = scenarios[state.turn - 1];
     document.getElementById("scenario-title").textContent = current.title;
@@ -183,6 +235,7 @@ function makeChoice(choice) {
 }
 
 function endGame() {
+  updateUI();
   document.getElementById("game-board").classList.add("hidden");
   const endScreen = document.getElementById("end-screen");
   endScreen.classList.remove("hidden");
@@ -197,12 +250,35 @@ function endGame() {
     diagnosis = "Estructura fragmentada. La falta de sistemas de información integrados generó decisiones reactivas.";
   }
 
+  const activeSystems = [];
+  if (state.systems.erp) activeSystems.push("ERP Integrado");
+  if (state.systems.crm) activeSystems.push("CRM Centralizado");
+  if (state.systems.org) activeSystems.push("Rediseño Matricial");
+  const systemsText = activeSystems.length > 0 ? activeSystems.join(", ") : "Ninguno (operación tradicional)";
+
   document.getElementById("final-summary").textContent = diagnosis;
   document.getElementById("final-stats").innerHTML = `
-    <p style="margin-top:12px;">
-      <strong>Índice Global de Diseño Organizacional:</strong> ${avg}% | 
+    <p>
+      <strong>Índice Global de Diseño Organizacional:</strong> ${avg}% |
       <strong>Presupuesto Restante:</strong> $${state.budget.toLocaleString()}
     </p>
+    <p style="margin-top:8px; color:#cbd5e1;">
+      <strong>Sistemas y estructuras implementadas:</strong> ${systemsText}
+    </p>
+    <div class="stats-grid">
+      <div class="stat-chip">
+        <span>Cohesión de Áreas</span>
+        <strong>${state.cohesion}%</strong>
+      </div>
+      <div class="stat-chip">
+        <span>Flujo de Información</span>
+        <strong>${state.infoflow}%</strong>
+      </div>
+      <div class="stat-chip">
+        <span>Capacidad de Respuesta</span>
+        <strong>${state.response}%</strong>
+      </div>
+    </div>
   `;
 }
 
@@ -219,15 +295,6 @@ function resetGame() {
   document.getElementById("game-board").classList.remove("hidden");
   document.getElementById("end-screen").classList.add("hidden");
   document.getElementById("event-log").innerHTML = "<li>Nueva simulación iniciada. Diseña tu organización empresarial.</li>";
-  
-  // Restaurar tarjetas de departamentos
-  document.getElementById("dept-ventas").classList.remove("connected");
-  document.getElementById("dept-ventas").innerHTML = "🛒 <strong>Comercial / Ventas</strong><br><small>Estado: Operación manual</small>";
-  document.getElementById("dept-ops").classList.remove("connected");
-  document.getElementById("dept-ops").innerHTML = "📦 <strong>Operaciones / Almacén</strong><br><small>Estado: Aislado</small>";
-  document.getElementById("dept-finanzas").classList.remove("connected");
-  document.getElementById("dept-finanzas").innerHTML = "📊 <strong>Finanzas y Control</strong><br><small>Estado: Reportes tardíos</small>";
-
   updateUI();
 }
 
