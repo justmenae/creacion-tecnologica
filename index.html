@@ -1,143 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Diseña tu organización</title>
-  <meta name="description" content="Editor de organigramas que diagnostica amplitud de control, unidad de mando y coherencia con la estrategia, el tamaño, la tecnología y el entorno.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEO · Diagnóstico de Escalabilidad Organizacional</title>
+<meta name="description" content="Auditoría gratuita en 1 minuto: descubre dónde se atasca tu empresa al crecer.">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <section class="portada" id="portada">
-    <div>
-      <p class="kicker">Estructura y diseño organizacional</p>
-      <h1>Diseña la estructura de tu organización</h1>
-      <p>Arma un organigrama, mide su amplitud de control y descubre si encaja con tu estrategia, tamaño, tecnología y entorno.</p>
-      <p class="desliza">Desliza para empezar</p>
+<header class="cab">
+  <div>
+    <h1>DEO</h1>
+    <p class="sub">Diagnóstico de Escalabilidad Organizacional: ¿tu estructura aguanta el próximo salto de ventas?</p>
+  </div>
+  <button type="button" id="btnReporte" class="btn-pri no-print">Reporte ejecutivo</button>
+</header>
+
+<div class="rep-cab solo-print">
+  <strong>Reporte ejecutivo DEO</strong> · <span id="repEmpresa"></span> · <span id="repFecha"></span>
+</div>
+
+<main class="grid">
+  <section class="panel no-print" aria-labelledby="tPlant">
+    <h2 id="tPlant">1. Parte de un caso</h2>
+    <div class="plantillas" role="group" aria-label="Plantillas">
+      <button type="button" class="plant" data-p="semilla" aria-pressed="false"><b>Startup Fase Semilla</b><span>6 personas; el fundador decide todo.</span></button>
+      <button type="button" class="plant" data-p="mype" aria-pressed="false"><b>Mype Comercial en Expansión</b><span>28 personas; ventas crece más rápido que la gestión.</span></button>
+      <button type="button" class="plant" data-p="agencia" aria-pressed="false"><b>Agencia Digital</b><span>20 personas repartidas entre proyectos.</span></button>
     </div>
+
+    <h2>2. Ajusta tu empresa</h2>
+    <label class="campo">Nombre de la empresa
+      <input type="text" id="empresa" placeholder="Ej. Mi Empresa SAC" maxlength="40">
+    </label>
+    <label class="campo"><span>Personas en el equipo <output data-out="emp"></o></span>
+      <input type="range" id="emp" min="3" max="60" step="1">
+      <small>Incluye a la dirección.</small></label>
+    <label class="campo"><span>Niveles de jefatura <output data-out="niv"></o></span>
+      <input type="range" id="niv" min="1" max="5" step="1">
+      <small>Cuántas capas hay entre la dirección y quien ejecuta.</small></label>
+    <label class="campo"><span>Personas que reportan a cada jefe <output data-out="tramo"></o></span>
+      <input type="range" id="tramo" min="2" max="20" step="1">
+      <small>Tramo de control: cuántos directos supervisa cada jefe.</small></label>
+    <label class="campo"><span>Áreas o departamentos <output data-out="areas"></o></span>
+      <input type="range" id="areas" min="1" max="8" step="1">
+      <small>Ventas, operaciones, finanzas, diseño, etc.</small></label>
+    <label class="campo"><span>Decisiones que esperan a la dirección <output data-out="cent"></o></span>
+      <input type="range" id="cent" min="0" max="100" step="5">
+      <small>Precios, contrataciones, gastos, prioridades.</small></label>
+    <label class="campo"><span>Personas con más de un jefe <output data-out="dual"></o></span>
+      <input type="range" id="dual" min="0" max="60" step="1">
+      <small>Reciben órdenes de dos personas a la vez.</small></label>
+
+    <fieldset class="campo">
+      <legend>Cómo se coordinan hoy</legend>
+      <label class="chk"><input type="checkbox" name="coord" value="reuniones"> Reuniones de sincronización fijas</label>
+      <label class="chk"><input type="checkbox" name="coord" value="procesos"> Procesos documentados</label>
+      <label class="chk"><input type="checkbox" name="coord" value="metas"> Metas medibles (OKR o KPI)</label>
+      <label class="chk"><input type="checkbox" name="coord" value="integrador"> Alguien que enlaza áreas (integrador)</label>
+      <label class="chk"><input type="checkbox" name="coord" value="herramienta"> Herramienta de gestión compartida</label>
+    </fieldset>
+
+    <aside class="demo">
+      <b>Demo en 60 segundos</b>
+      <ol>
+        <li>Elige «Mype Comercial en Expansión».</li>
+        <li>Baja «Decisiones que esperan a la dirección» a 40%.</li>
+        <li>Marca procesos y metas, y mira cómo sube el índice.</li>
+        <li>Pulsa «Reporte ejecutivo» para guardar el PDF.</li>
+      </ol>
+    </aside>
   </section>
 
-  <section class="invitacion">
-    <button class="invitacion-tarjeta" id="empezar" type="button">
-      <strong>Empieza a diseñar tu organización</strong>
-      <span>Haz clic aquí</span>
-    </button>
-  </section>
-
-  <section class="editor" id="editor" hidden aria-label="Editor de organigrama">
-    <div class="editor-caja">
-      <div class="lienzo-caja">
-        <div class="lienzo" id="lienzo">
-          <div class="escenario" id="escenario">
-            <svg id="lineas" aria-hidden="true"></svg>
-          </div>
-        </div>
-        <p class="pista" id="pista">Tu lienzo está vacío.<br>Agrega un cuadro o carga una plantilla.</p>
+  <section class="resultados" aria-live="polite">
+    <div class="tarjeta score">
+      <div class="medidor" id="medidor"><span id="indice">0</span><small>de 100</small></div>
+      <div>
+        <p class="etq">Índice de escalabilidad</p>
+        <h2 id="veredicto"></h2>
+        <p id="arqNombre" class="arq"></p>
+        <p id="arqTexto"></p>
       </div>
-
-      <aside class="barra">
-        <h2>Herramientas</h2>
-        <h3>Agregar</h3>
-        <button class="herr" type="button" data-add="direccion">Dirección<small>Quien lidera la organización.</small></button>
-        <button class="herr" type="button" data-add="area">Área<small>Departamento, división o equipo.</small></button>
-        <button class="herr" type="button" data-add="cargo">Cargo<small>Un puesto dentro de un área.</small></button>
-
-        <h3>Relacionar</h3>
-        <button class="herr" type="button" id="btnConectar" aria-pressed="false">Conectar<small>Cuadro superior y luego el que depende de él.</small></button>
-        <button class="herr" type="button" id="btnStaff">Alternar autoridad staff<small>Línea (continua) o staff/asesoría (punteada).</small></button>
-
-        <h3>Editar</h3>
-        <button class="herr" type="button" id="btnDeshacer">Deshacer<small>Ctrl+Z</small></button>
-        <button class="herr" type="button" id="btnRehacer">Rehacer<small>Ctrl+Y</small></button>
-        <button class="herr" type="button" id="btnEliminar">Eliminar seleccionado<small>Clic en un cuadro y luego aquí.</small></button>
-
-        <h3>Buscar y filtrar</h3>
-        <input class="campo" type="search" id="buscar" placeholder="Buscar por texto" aria-label="Buscar cuadros">
-        <select class="campo" id="filtroTipo" aria-label="Filtrar por tipo">
-          <option value="">Todos los tipos</option>
-          <option value="direccion">Dirección</option>
-          <option value="area">Áreas</option>
-          <option value="cargo">Cargos</option>
-          <option value="staff">Staff</option>
-        </select>
-
-        <details>
-          <summary>Plantillas y archivo</summary>
-          <select class="campo" id="selPlantilla" aria-label="Plantilla">
-            <option value="funcional">Funcional</option>
-            <option value="productos">Por productos</option>
-            <option value="geografica">Geográfica</option>
-            <option value="matricial">Matricial</option>
-          </select>
-          <button class="herr" type="button" id="btnPlantilla">Cargar plantilla<small>Reemplaza el lienzo.</small></button>
-          <button class="herr" type="button" id="btnExportar">Exportar JSON<small>Descarga tu diseño.</small></button>
-          <button class="herr" type="button" id="btnImportar">Importar JSON<small>Abre un diseño guardado.</small></button>
-          <input type="file" id="archivo" accept="application/json,.json" hidden>
-          <button class="herr" type="button" id="btnLimpiar">Limpiar todo<small>Borra el lienzo completo.</small></button>
-        </details>
-
-        <p class="mensaje" id="mensaje" aria-live="polite">Arrastra un cuadro para moverlo. Doble clic para cambiar su texto.</p>
-      </aside>
     </div>
 
-    <div class="diag" id="diag">
-      <article class="card">
-        <h2>Métricas y alertas</h2>
-        <div class="kpis" id="metricas"></div>
-        <ul class="lista" id="alertas"></ul>
-      </article>
-
-      <article class="card">
-        <h2>Contexto y diseño</h2>
-        <label class="rotulo" for="cfgFormal">Formalización: <b id="vFormal"></b>%</label>
-        <input type="range" id="cfgFormal" min="0" max="100" step="5">
-        <label class="rotulo" for="cfgCentral">Centralización: <b id="vCentral"></b>%</label>
-        <input type="range" id="cfgCentral" min="0" max="100" step="5">
-        <label class="rotulo chk"><input type="checkbox" id="cfgMatricial"> Doble reporte intencional (matricial)</label>
-        <label class="rotulo" for="cfgDepto">Departamentalización</label>
-        <select class="campo" id="cfgDepto"></select>
-        <p class="nota" id="deptoInfo"></p>
-        <label class="rotulo" for="cfgEstrategia">Estrategia</label>
-        <select class="campo" id="cfgEstrategia">
-          <option value="costos">Liderazgo en costos</option>
-          <option value="diferenciacion">Diferenciación</option>
-          <option value="innovacion">Innovación</option>
-        </select>
-        <label class="rotulo" for="cfgTamano">Tamaño</label>
-        <select class="campo" id="cfgTamano">
-          <option value="pequena">Pequeña</option>
-          <option value="mediana">Mediana</option>
-          <option value="grande">Grande</option>
-        </select>
-        <label class="rotulo" for="cfgTecno">Tecnología</label>
-        <select class="campo" id="cfgTecno">
-          <option value="rutinaria">Rutinaria</option>
-          <option value="mixta">Mixta</option>
-          <option value="noRutinaria">No rutinaria</option>
-        </select>
-        <label class="rotulo" for="cfgEntorno">Incertidumbre del entorno</label>
-        <select class="campo" id="cfgEntorno">
-          <option value="estable">Estable</option>
-          <option value="cambiante">Cambiante</option>
-          <option value="incierto">Muy incierto</option>
-        </select>
-      </article>
-
-      <article class="card">
-        <h2>Coherencia estructura–contexto</h2>
-        <div class="medidor" id="medidor" aria-hidden="true">
-          <span class="marca" id="mActual"></span><span class="marca ideal" id="mIdeal"></span>
-        </div>
-        <div class="escala"><span>Orgánica</span><span>Mecanicista</span></div>
-        <p class="nota" id="resumen"></p>
-        <ul class="lista" id="recomendaciones"></ul>
-      </article>
+    <div class="tarjeta">
+      <h2>Organigrama generado</h2>
+      <div class="leyenda">
+        <span><i class="pt ok"></i>Sana</span><span><i class="pt amb"></i>Al límite</span>
+        <span><i class="pt red"></i>Cuello de botella</span><span><i class="pt cru"></i>Cruce de mando</span>
+      </div>
+      <div class="svg-caja"><svg id="org" role="img" aria-label="Organigrama"></svg></div>
+      <p class="nota">El número dentro de cada jefe indica a cuántas personas supervisa directamente.</p>
     </div>
+
+    <div class="tarjeta">
+      <h2>Qué mirar primero</h2>
+      <ul id="alertas" class="alertas"></ul>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Salud por dimensión</h2>
+      <div id="dims" class="dims"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Plan de acción</h2>
+      <ol id="plan" class="plan"></ol>
+    </div>
+
+    <p class="fuentes">Base teórica: Mintzberg (configuraciones y mecanismos de coordinación), Daft (tramo de control, diferenciación vertical y horizontal) y Galbraith (procesamiento de información y coordinación). Es una auditoría orientativa, no reemplaza un análisis a medida.</p>
   </section>
-
-  <script type="module" src="app.js"></script>
+</main>
+<script src="teoria.js"></script>
 </body>
 </html>
